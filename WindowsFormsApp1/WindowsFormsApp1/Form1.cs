@@ -28,7 +28,7 @@ namespace WindowsFormsApp1
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            //chuyển đổi 
+
             string inputPath = "books.csv";
             var table = new DataTable();//var dùng thay thế được cho DataTable
             table.Columns.AddRange(new DataColumn[] {//AddRange thêm hàng loạt, Add thì không
@@ -67,12 +67,14 @@ namespace WindowsFormsApp1
                     string authors = parts[2];
 
 
-                    //bỏ qua không có đánh giá và trang sách bằng 0
+                    //bỏ qua không có đánh giá và không có trang sách
                     if (ratingsCount == 0 || numPages == 0)
                         continue;
                     table.Rows.Add(bookID, title, authors, avgRating, numPages, ratingsCount);
                 }
+                //chuyền dữ liệu vào bảng
                 dataGridView1.DataSource = table; 
+                //điều chỉnh kích thước bảng
                 dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                 MessageBox.Show("Đọc sách thành công!");
             }
@@ -81,6 +83,7 @@ namespace WindowsFormsApp1
                 MessageBox.Show($"Lỗi: {ex.Message}");
             }
             string outputPath = "books_clean.csv";
+            //ghi sách ra
             GhiFile(table, outputPath);
         }
 
