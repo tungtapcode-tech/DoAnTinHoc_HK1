@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Windows.Forms;
 
@@ -14,7 +15,7 @@ namespace WindowsFormsApp1
         }
         public void GhiFile(DataTable table, string outputPath)
         {
-            using (StreamWriter writer = new StreamWriter(outputPath))
+            using (var writer = new StreamWriter(outputPath))
             {
                 // Write header
                 writer.WriteLine("bookID,title,author,average_rating,num_pages,ratings_count");
@@ -31,12 +32,12 @@ namespace WindowsFormsApp1
             string inputPath = "books.csv";
             var table = new DataTable();//var dùng thay thế được cho DataTable
             table.Columns.AddRange(new DataColumn[] {//AddRange thêm hàng loạt, Add thì không
-                new DataColumn("bookID"),
+                new DataColumn("bookID",typeof(int)),
                 new DataColumn("title"),
                 new DataColumn("author"),
-                new DataColumn("average_rating"),
-                new DataColumn("num_pages"),
-                new DataColumn("ratings_count")
+                new DataColumn("average_rating",typeof(double)),
+                new DataColumn("num_pages",typeof(int)),
+                new DataColumn("ratings_count",typeof(int))
             });
 
             try
@@ -50,16 +51,25 @@ namespace WindowsFormsApp1
                         skipHeader = false;
                         continue;
                     }
-                    string[] parts = line.Split(',');
+                    string[] parts = line.Split(',');//tách các cột (,) thành các phần tử
                     if (parts.Length < 9) continue;
 
-                    string bookID = parts[0];
+                    //bỏ qua các lỗi ký tự trong bookID,avgRating,ratingsCount,numPages)
+                    if (!int.TryParse(parts[0], out int bookID)) 
+                        continue;
+                    if (!double.TryParse(parts[3], out double avgRating)) 
+                        continue;
+                    if (!int.TryParse(parts[8], out int ratingsCount)) 
+                        continue;
+                    if (!int.TryParse(parts[7].Trim(), out int numPages))
+                        continue;
                     string title = parts[1];
                     string authors = parts[2];
-                    string avgRating = parts[3];
-                    string numPages = parts[7].Trim();
-                    string ratingsCount = parts[8];
 
+
+                    //bỏ qua không có đánh giá và trang sách bằng 0
+                    if (ratingsCount == 0 || numPages == 0)
+                        continue;
                     table.Rows.Add(bookID, title, authors, avgRating, numPages, ratingsCount);
                 }
                 dataGridView1.DataSource = table; 

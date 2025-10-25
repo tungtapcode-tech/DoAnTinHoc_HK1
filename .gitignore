@@ -1,0 +1,37 @@
+# Ignore Visual Studio temporary files, build results, and user-specific files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore build results
+bin/
+obj/
+
+# Ignore NuGet Packages
+*.nupkg
+# Ignore package restore files
+packages/
+
+# Ignore other files
+*.log
+*.tlog
+*.cache
+*.pdb
+*.db
+*.vsidx
+
+# Ignore Copilot and chat session files
+CopilotSnapshots/
+copilot-chat/
+
+# Ignore CSVs in bin (optional, remove if you want to keep)
+bin/**/*.csv
+
+# Do not ignore source code files
+!WindowsFormsApp1/WindowsFormsApp1/*.cs
+!WindowsFormsApp1/WindowsFormsApp1/*.Designer.cs
+!WindowsFormsApp1/WindowsFormsApp1/*.csproj
+!WindowsFormsApp1/WindowsFormsApp1/*.config
+!WindowsFormsApp1/WindowsFormsApp1/*.resx
