@@ -1,0 +1,80 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Microsoft.VisualBasic.FileIO;
+
+namespace WindowsFormsApp1
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+        public void LoadData()
+        {
+
+        }
+        public void CleanCsvFile()
+        {
+            string inputPath = "Book1.csv";
+            string outputPath = "books_clean.csv";
+
+            if (!File.Exists(inputPath))
+            {
+                MessageBox.Show("File Book1.csv không tồn tại!");
+                return;
+            }
+
+            int kept = 0, skipped = 0;
+            try
+            {
+                using (var parser = new TextFieldParser(inputPath))
+                using (var writer = new StreamWriter(outputPath))
+                {
+                    parser.TextFieldType = FieldType.Delimited;
+                    parser.SetDelimiters(",");
+                    parser.HasFieldsEnclosedInQuotes = true;
+                    writer.WriteLine("bookID,title,authors,average_rating,num_pages,ratings_count");
+                    parser.ReadLine();
+                    while (!parser.EndOfData)
+                    {
+                        try
+                        {
+                            string[] fields = parser.ReadFields();
+                            if (fields.Length < 12) { skipped++; continue; }
+                            string title = fields[1].Trim('"');
+                            string author = fields[2].Trim('"');
+                            if (!double.TryParse(fields[3], out double rating)) { skipped++; continue; }
+                            if (!int.TryParse(fields[7], out int pages)) { skipped++; continue; }
+                            if (!int.TryParse(fields[8], out int ratingsCount)) { skipped++; continue; }
+                            if (string.IsNullOrWhiteSpace(title) || rating <= 0 || pages <= 0)
+                            {
+                                skipped++;
+                                continue;
+                            }
+                            writer.WriteLine($"{fields[0]},{title},{author},{rating},{pages},{ratingsCount}");
+                            kept++;
+                        }
+                        catch (Exception)
+                        {
+                            skipped++;
+                        }
+                    }
+                }
+                MessageBox.Show($"Đã tạo books_clean.csv\nGiữ lại: {kept} dòng\nBỏ đi: {skipped} dòng");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}");
+            }
+        }
+    }
+}
